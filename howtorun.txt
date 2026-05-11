@@ -1,0 +1,312 @@
+# AI Traffic Management System – Setup & Execution Guide
+
+## 1. Project Overview
+
+This project is an AI-based Traffic Management System that uses a YOLO object detection model to detect vehicles from lane images and dynamically allocate traffic signal timings based on traffic density.
+
+The system:
+
+* Detects vehicles from 4 traffic lanes
+* Categorizes vehicles into classes
+* Calculates lane weight using PCU values
+* Dynamically generates signal timings
+* Can be integrated with Arduino for real-time traffic signal display
+
+---
+
+# 2. Requirements
+
+## Hardware Requirements
+
+* Laptop/Desktop
+* Arduino Uno (optional for hardware integration)
+* USB Cable for Arduino connection
+* Traffic signal LEDs / LCD Display (optional)
+
+---
+
+## Software Requirements
+
+Install the following:
+
+* Python 3.10 or above
+* VS Code / PyCharm
+* Git (optional)
+
+---
+
+# 3. Python Libraries Required
+
+Install all required libraries using:
+
+```bash
+pip install ultralytics
+pip install opencv-python
+pip install numpy
+pip install pillow
+pip install matplotlib
+```
+
+Or install together:
+
+```bash
+pip install ultralytics opencv-python numpy pillow matplotlib
+```
+
+---
+
+# 4. Project Folder Structure
+
+Ensure the project folder is arranged as follows:
+
+```text
+PRETRAINED/
+│
+├── smart_signal.py
+├── yolov8n.pt
+├── .gitignore
+├── venv/
+│
+├── UVH-26/
+│   ├── uvh_classes.txt
+│   └── weights/
+│       └── YOLOv11-S/
+│           └── UVH-26-MV-YOLOv11-S.pt
+│
+├── test_images/
+│   └── input/
+│       ├── lane1.jpg
+│       ├── lane2.jpg
+│       ├── lane3.jpg
+│       └── lane4.jpg
+```
+
+---
+
+# 5. Steps to Run the Project From Scratch
+
+## Step 1: Clone or Download Project
+
+Download the complete project folder and open it in VS Code.
+
+---
+
+## Step 2: Create Virtual Environment (Recommended)
+
+Windows:
+
+```bash
+python -m venv venv
+venv\Scripts\activate
+```
+
+Mac/Linux:
+
+```bash
+python3 -m venv venv
+source venv/bin/activate
+```
+
+---
+
+## Step 3: Install Required Libraries
+
+```bash
+pip install ultralytics opencv-python numpy pillow matplotlib
+```
+
+---
+
+## Step 4: Verify Model Files
+
+Ensure these files exist:
+
+```text
+UVH-26/weights/YOLOv11-S/UVH-26-MV-YOLOv11-S.pt
+UVH-26/uvh_classes.txt
+```
+
+---
+
+## Step 5: Add Traffic Lane Images
+
+Place the lane images inside:
+
+```text
+test_images/input/
+```
+
+Required image names:
+
+```text
+lane1.jpg
+lane2.jpg
+lane3.jpg
+lane4.jpg
+```
+
+---
+
+## Step 6: Run the Python Program
+
+Open terminal in the project directory and run:
+
+```bash
+python smart_signal.py
+```
+
+---
+
+# 6. Expected Output
+
+The system will:
+
+* Detect vehicles from each lane image
+
+* Categorize vehicles into:
+
+  * Two Wheeler
+  * Three Wheeler
+  * Four Wheeler
+  * Heavy Vehicle
+
+* Calculate:
+
+  * Vehicle counts
+  * Lane weight
+  * Dynamic green signal timing
+
+Example terminal output:
+
+```text
+=== TRAFFIC ANALYSIS ===
+
+Lane 1
+Counts: {'two': 12, 'three': 2, 'four': 8, 'heavy': 1}
+Weight: 25.6
+Green Time: 40 sec
+
+=== FINAL SIGNAL PLAN ===
+Lane 1: 40 sec GREEN
+Lane 2: 25 sec GREEN
+Lane 3: 30 sec GREEN
+Lane 4: 25 sec GREEN
+```
+
+---
+
+# 7. Vehicle Classification Logic
+
+Vehicle categories are classified as:
+
+| Vehicle Type               | Category |
+| -------------------------- | -------- |
+| Two-wheeler, Bicycle       | two      |
+| Three-wheeler              | three    |
+| Sedan, SUV, Hatchback, Van | four     |
+| Truck, Bus, Heavy Vehicles | heavy    |
+
+---
+
+# 8. PCU (Passenger Car Unit) Values
+
+| Category      | PCU Value |
+| ------------- | --------- |
+| Two Wheeler   | 0.5       |
+| Three Wheeler | 1.2       |
+| Four Wheeler  | 1.0       |
+| Heavy Vehicle | 3.5       |
+
+These values help estimate realistic traffic congestion levels.
+
+---
+
+# 9. Dynamic Signal Timing Logic
+
+* Total traffic cycle = 120 seconds
+* Lane timings are calculated proportionally using lane weight
+* Minimum green time = 15 sec
+* Maximum green time = 60 sec
+
+This ensures fair and adaptive traffic signal allocation.
+
+---
+
+# 10. Arduino Integration (Optional)
+
+The generated timings can be sent to Arduino using serial communication.
+
+Possible applications:
+
+* Traffic LEDs
+* LCD timer display
+* Smart traffic junction simulation
+
+Example:
+
+```python
+import serial
+arduino = serial.Serial('COM3', 9600)
+arduino.write(str(time).encode())
+```
+
+---
+
+# 11. Common Errors & Solutions
+
+## Error: No module named ultralytics
+
+Solution:
+
+```bash
+pip install ultralytics
+```
+
+---
+
+## Error: Model file not found
+
+Ensure the model path is correct:
+
+```python
+YOLO("UVH-26/weights/YOLOv11-S/UVH-26-MV-YOLOv11-S.pt")
+```
+
+---
+
+## Error: Images not found
+
+Ensure lane images are present in:
+
+```text
+test_images/input/
+```
+
+---
+
+# 12. Future Improvements
+
+* Real-time CCTV feed integration
+* Live traffic monitoring
+* Multi-junction traffic synchronization
+* Emergency vehicle prioritization
+* Cloud-based traffic analytics
+* Web dashboard for monitoring
+
+---
+
+# 13. Technologies Used
+
+* Python
+* Ultralytics YOLO
+* OpenCV
+* NumPy
+* Arduino Uno
+* Embedded C
+* Computer Vision
+
+---
+
+# 14. Conclusion
+
+This project demonstrates an intelligent AI-driven traffic management system capable of dynamically adjusting signal timings based on detected traffic density. The system combines computer vision, machine learning, and embedded systems to create a smart and adaptive traffic control solution.

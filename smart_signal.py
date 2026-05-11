@@ -1,9 +1,7 @@
 from ultralytics import YOLO
 
-# ✅ Load trained Indian traffic model
 model = YOLO("UVH-26/weights/YOLOv11-S/UVH-26-MV-YOLOv11-S.pt")
 
-# ✅ Load class names
 class_names = open("UVH-26/uvh_classes.txt").read().splitlines()
 
 # ✅ Categorize vehicles
@@ -17,7 +15,7 @@ def classify_vehicle(name):
     else:
         return "heavy"
 
-# ✅ PCU-based realistic weights
+
 PCU = {
     "two": 0.5,
     "three": 1.2,
@@ -25,7 +23,6 @@ PCU = {
     "heavy": 3.5
 }
 
-# ✅ Process one lane
 def process_lane(image_path):
     results = model(image_path)
 
@@ -38,11 +35,9 @@ def process_lane(image_path):
             category = classify_vehicle(name)
             counts[category] += 1
 
-    # 🔥 Calculate lane weight using PCU
     total_vehicles = sum(counts.values())
     lane_weight = sum(counts[k] * PCU[k] for k in counts)
 
-    # 🔥 Add congestion effect
     if total_vehicles > 20:
         lane_weight *= 1.3
     elif total_vehicles > 10:
@@ -50,7 +45,6 @@ def process_lane(image_path):
 
     return counts, lane_weight
 
-# ✅ Input images (ALL LANES)
 lanes = [
     "test_images/input/lane1.jpg",
     "test_images/input/lane2.jpg",
@@ -61,14 +55,12 @@ lanes = [
 lane_data = []
 total_weight = 0
 
-# 🔥 Analyze ALL lanes first
 for lane in lanes:
     counts, weight = process_lane(lane)
     lane_data.append((counts, weight))
     total_weight += weight
 
-# ✅ Total cycle time (you can tweak)
-TOTAL_CYCLE = 120  # seconds
+TOTAL_CYCLE = 120
 
 print("\n=== TRAFFIC ANALYSIS ===")
 
